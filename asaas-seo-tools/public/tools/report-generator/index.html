@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dynamic Dashboard Builder | A.SaaS Tools</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Syne:wght@600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../../css/global.css">
+    
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        body { padding-top: 80px; background-color: #0a0a0a; overflow-x: hidden; }
+        
+        .app-layout {
+            display: grid;
+            grid-template-columns: 320px 1fr;
+            gap: 30px;
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 20px 2%;
+            align-items: start;
+        }
+
+        /* =========================================
+           LEFT: DATA EDITOR (SIDEBAR)
+        ========================================= */
+        .editor-sidebar {
+            background: rgba(22, 22, 22, 0.8);
+            border: 1px solid rgba(255,255,255,0.05);
+            border-radius: 12px;
+            padding: 25px;
+            backdrop-filter: blur(15px);
+            height: calc(100vh - 120px);
+            overflow-y: auto;
+            position: sticky;
+            top: 100px;
+        }
+
+        /* Custom Scrollbar */
+        .editor-sidebar::-webkit-scrollbar { width: 5px; }
+        .editor-sidebar::-webkit-scrollbar-thumb { background: rgba(57, 255, 20, 0.5); border-radius: 10px; }
+
+        .editor-title { font-family: var(--font-heading); color: #fff; font-size: 1.2rem; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
+        .editor-title span { color: var(--primary); }
+
+        .form-section { margin-bottom: 25px; padding-bottom: 15px; border-bottom: 1px dashed rgba(255,255,255,0.1); }
+        .form-section h4 { color: var(--primary); font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 15px; }
+
+        .form-group { margin-bottom: 12px; }
+        .form-group label { display: block; font-size: 0.75rem; color: var(--text-sec); margin-bottom: 5px; }
+        .form-group input {
+            width: 100%; padding: 10px;
+            background: rgba(0,0,0,0.4);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 6px; color: #fff;
+            font-family: var(--font-body); font-size: 0.9rem;
+            transition: all 0.3s;
+        }
+        .form-group input:focus { border-color: var(--primary); outline: none; }
+        
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+        /* =========================================
+           RIGHT: LIVE DASHBOARD PREVIEW
+        ========================================= */
+        .preview-area {
+            background: #0a0a0a;
+            border: 1px solid rgba(255,255,255,0.03);
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+            position: relative;
+        }
+
+        /* Dashboard Header */
+        .dash-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 20px; }
+        .dash-header h1 { font-family: var(--font-heading); font-size: 2rem; margin-bottom: 5px; color: #fff; }
+        .dash-header p { color: var(--text-sec); font-size: 0.95rem; }
+        
+        /* Fake Tabs */
+        .tabs-container { border-bottom: 1px solid rgba(255,255,255,0.1); margin-bottom: 30px; display: flex; gap: 30px; }
+        .tab-btn { background: none; border: none; color: var(--text-sec); font-size: 1rem; font-weight: 500; padding: 10px 0; }
+        .tab-btn.active { color: #fff; border-bottom: 2px solid var(--primary); }
+
+        /* KPI Cards */
+        .kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 30px; }
+        .kpi-card {
+            background: rgba(22, 22, 22, 0.4); border: 1px solid rgba(255,255,255,0.05); border-radius: 10px; padding: 20px;
+        }
+        .kpi-label { font-size: 0.75rem; letter-spacing: 1px; text-transform: uppercase; color: var(--text-sec); font-weight: 600; }
+        .kpi-value { font-family: var(--font-heading); font-weight: 700; font-size: 2rem; color: #fff; margin: 10px 0 5px; }
+        .kpi-sub { font-size: 0.75rem; color: var(--text-sec); margin-top: 5px; }
+
+        /* Chart Panels */
+        .charts-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 20px; }
+        .dash-panel {
+            background: rgba(22, 22, 22, 0.4); border: 1px solid rgba(255,255,255,0.05); border-radius: 10px; padding: 25px;
+        }
+        .panel-title { font-family: var(--font-heading); font-size: 1.1rem; margin-bottom: 5px; color: #fff; }
+        .panel-sub { font-size: 0.8rem; color: var(--text-sec); margin-bottom: 20px; }
+        .chart-container { position: relative; height: 280px; width: 100%; }
+
+        /* Action Buttons */
+        .action-bar { display: flex; justify-content: flex-end; gap: 15px; margin-top: 30px; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 20px; }
+
+        @media (max-width: 1200px) {
+            .app-layout { grid-template-columns: 1fr; }
+            .editor-sidebar { position: relative; top: 0; height: auto; }
+            .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+            .charts-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="tool-nav" style="position: fixed; top: 0; left: 0; width: 100%; padding: 15px 5%; background: rgba(10, 10, 10, 0.95); z-index: 1000; display: flex; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.05);">
+        <a href="../../index.html" class="logo" style="font-family: 'Syne'; font-weight: 800; color: #fff; text-decoration: none;">A.SaaS<span style="color: #39FF14;">.</span></a>
+        <a href="../../index.html" style="color: #a4abc8; text-decoration: none; font-size: 0.9rem;">← Back to Home</a>
+    </nav>
+
+    <div class="app-layout">
+        
+        <aside class="editor-sidebar">
+            <div class="editor-title">
+                <span>⚡</span> Report Editor
+            </div>
+            <p style="font-size: 0.8rem; color: var(--text-sec); margin-bottom: 20px;">Type numbers below to animate the dashboard instantly.</p>
+
+            <div class="form-section">
+                <h4>1. Client Details</h4>
+                <div class="form-group">
+                    <label>Client / Agency Name</label>
+                    <input type="text" id="clientName" value="A.SaaS Tools" oninput="updateDashboard()">
+                </div>
+            </div>
+
+            <div class="form-section">
+                <h4>2. Key Metrics (KPIs)</h4>
+                <div class="grid-2">
+                    <div class="form-group">
+                        <label>Total Reach</label>
+                        <input type="text" id="inpReach" value="142K" oninput="updateDashboard()">
+                    </div>
+                    <div class="form-group">
+                        <label>Leads Generated</label>
+                        <input type="text" id="inpLeads" value="38" oninput="updateDashboard()">
+                    </div>
+                    <div class="form-group">
+                        <label>Brand Engagement</label>
+                        <input type="text" id="inpEng" value="12.4K" oninput="updateDashboard()">
+                    </div>
+                    <div class="form-group">
+                        <label>Link Clicks</label>
+                        <input type="text" id="inpClicks" value="3,105" oninput="updateDashboard()">
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <h4>3. Weekly Dynamics (Line Chart)</h4>
+                <div class="grid-2">
+                    <div class="form-group">
+                        <label>Week 1</label>
+                        <input type="number" id="w1" value="4200" oninput="updateDashboard()">
+                    </div>
+                    <div class="form-group">
+                        <label>Week 2</label>
+                        <input type="number" id="w2" value="5900" oninput="updateDashboard()">
+                    </div>
+                    <div class="form-group">
+                        <label>Week 3</label>
+                        <input type="number" id="w3" value="8500" oninput="updateDashboard()">
+                    </div>
+                    <div class="form-group">
+                        <label>Week 4</label>
+                        <input type="number" id="w4" value="12400" oninput="updateDashboard()">
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-section" style="border-bottom: none;">
+                <h4>4. Traffic Sources (Doughnut)</h4>
+                <div class="grid-2">
+                    <div class="form-group">
+                        <label>LinkedIn (%)</label>
+                        <input type="number" id="srcLi" value="45" oninput="updateDashboard()">
+                    </div>
+                    <div class="form-group">
+                        <label>Instagram (%)</label>
+                        <input type="number" id="srcIg" value="30" oninput="updateDashboard()">
+                    </div>
+                    <div class="form-group">
+                        <label>Direct (%)</label>
+                        <input type="number" id="srcDir" value="15" oninput="updateDashboard()">
+                    </div>
+                    <div class="form-group">
+                        <label>Facebook (%)</label>
+                        <input type="number" id="srcFb" value="10" oninput="updateDashboard()">
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <main class="preview-area" id="printArea">
+            
+            <div class="dash-header">
+                <div>
+                    <h1>Social Media Analytics</h1>
+                    <p>Cross-platform engagement for <strong id="dispClient" style="color: #fff;">A.SaaS Tools</strong></p>
+                </div>
+                <div style="background: rgba(255,255,255,0.05); padding: 8px 15px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.1); color: #fff; font-size: 0.9rem;">
+                    Last 30 Days ▼
+                </div>
+            </div>
+
+            <div class="tabs-container">
+                <button class="tab-btn active">Overview</button>
+                <button class="tab-btn">LinkedIn</button>
+                <button class="tab-btn">Instagram</button>
+                <button class="tab-btn">Facebook</button>
+            </div>
+
+            <div class="kpi-grid">
+                <div class="kpi-card" style="border-top: 3px solid var(--primary);">
+                    <div class="kpi-label">Total Agency Reach</div>
+                    <div class="kpi-value" id="dispReach">142K</div>
+                    <div class="kpi-sub" style="color:#27c93f;">↑ 24.5% <span style="color:var(--text-sec)">Combined accounts</span></div>
+                </div>
+                <div class="kpi-card" style="border-top: 3px solid #0A66C2;">
+                    <div class="kpi-label">B2B Leads Generated</div>
+                    <div class="kpi-value" id="dispLeads">38</div>
+                    <div class="kpi-sub" style="color:#27c93f;">↑ 12.1% <span style="color:var(--text-sec)">Via Forms</span></div>
+                </div>
+                <div class="kpi-card" style="border-top: 3px solid #E1306C;">
+                    <div class="kpi-label">Brand Engagement</div>
+                    <div class="kpi-value" id="dispEng">12.4K</div>
+                    <div class="kpi-sub" style="color:#ff5f56;">↓ 1.2% <span style="color:var(--text-sec)">Likes, comments</span></div>
+                </div>
+                <div class="kpi-card" style="border-top: 3px solid #1877F2;">
+                    <div class="kpi-label">Link Click-Throughs</div>
+                    <div class="kpi-value" id="dispClicks">3,105</div>
+                    <div class="kpi-sub" style="color:#27c93f;">↑ 8.4% <span style="color:var(--text-sec)">Traffic driven</span></div>
+                </div>
+            </div>
+
+            <div class="charts-grid">
+                <div class="dash-panel">
+                    <div class="panel-title">Audience Engagement Dynamics</div>
+                    <div class="panel-sub">Daily interactions across all connected platforms</div>
+                    <div class="chart-container"><canvas id="trendChart"></canvas></div>
+                </div>
+                <div class="dash-panel">
+                    <div class="panel-title">Traffic by Platform</div>
+                    <div class="panel-sub">Where traffic originates</div>
+                    <div class="chart-container"><canvas id="doughnutChart"></canvas></div>
+                </div>
+            </div>
+
+            <div class="action-bar">
+                <button class="btn btn-primary" onclick="alert('Proceeding to Lead Capture / PDF Export...')">Generate Final Report ↓</button>
+            </div>
+        </main>
+
+    </div>
+
+    <script src="../../js/main.js"></script>
+    
+    <script>
+        // Set Chart defaults for dark theme
+        Chart.defaults.color = '#a4abc8';
+        Chart.defaults.borderColor = 'rgba(255,255,255,0.05)';
+        Chart.defaults.font.family = "'Plus Jakarta Sans', sans-serif";
+
+        let trendChart, doughnutChart;
+
+        function initCharts() {
+            // 1. Line Chart (Neon Orange Curve)
+            const ctxTrend = document.getElementById('trendChart').getContext('2d');
+            let gradOrange = ctxTrend.createLinearGradient(0, 0, 0, 300);
+            gradOrange.addColorStop(0, 'rgba(57, 255, 20, 0.4)');
+            gradOrange.addColorStop(1, 'rgba(57, 255, 20, 0)');
+
+            trendChart = new Chart(ctxTrend, {
+                type: 'line',
+                data: {
+                    labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
+                    datasets: [{
+                        data: [4200, 5900, 8500, 12400],
+                        borderColor: '#39FF14',
+                        backgroundColor: gradOrange,
+                        borderWidth: 3, fill: true, tension: 0.3,
+                        pointBackgroundColor: '#0A0A0A', pointBorderColor: '#39FF14', pointRadius: 5
+                    }]
+                },
+                options: { 
+                    responsive: true, maintainAspectRatio: false, 
+                    plugins: { legend: { display: false } }, 
+                    scales: { x: { grid: { display: false } }, y: { beginAtZero: true, border: { display: false } } } 
+                }
+            });
+
+            // 2. Doughnut Chart
+            const ctxDoughnut = document.getElementById('doughnutChart').getContext('2d');
+            doughnutChart = new Chart(ctxDoughnut, {
+                type: 'doughnut',
+                data: {
+                    labels: ['LinkedIn', 'Instagram', 'Direct', 'Facebook'],
+                    datasets: [{
+                        data: [45, 30, 15, 10],
+                        backgroundColor: ['#0A66C2', '#E1306C', '#39FF14', '#1877F2'],
+                        borderColor: '#0a0a0a', borderWidth: 4
+                    }]
+                },
+                options: { 
+                    responsive: true, maintainAspectRatio: false, cutout: '75%', 
+                    plugins: { legend: { position: 'right', labels: { padding: 15, usePointStyle: true, boxWidth: 8 } } } 
+                }
+            });
+        }
+
+        // --- THE LIVE ENGINE ---
+        function updateDashboard() {
+            // 1. Update Text / KPIs
+            document.getElementById('dispClient').textContent = document.getElementById('clientName').value || 'Agency';
+            document.getElementById('dispReach').textContent = document.getElementById('inpReach').value || '0';
+            document.getElementById('dispLeads').textContent = document.getElementById('inpLeads').value || '0';
+            document.getElementById('dispEng').textContent = document.getElementById('inpEng').value || '0';
+            document.getElementById('dispClicks').textContent = document.getElementById('inpClicks').value || '0';
+
+            // 2. Update Line Chart (Weeks)
+            const wData = [
+                parseInt(document.getElementById('w1').value) || 0,
+                parseInt(document.getElementById('w2').value) || 0,
+                parseInt(document.getElementById('w3').value) || 0,
+                parseInt(document.getElementById('w4').value) || 0
+            ];
+            trendChart.data.datasets[0].data = wData;
+            trendChart.update();
+
+            // 3. Update Doughnut Chart (Sources)
+            const srcData = [
+                parseInt(document.getElementById('srcLi').value) || 0,
+                parseInt(document.getElementById('srcIg').value) || 0,
+                parseInt(document.getElementById('srcDir').value) || 0,
+                parseInt(document.getElementById('srcFb').value) || 0
+            ];
+            doughnutChart.data.datasets[0].data = srcData;
+            doughnutChart.update();
+        }
+
+        // Initialize on load
+        document.addEventListener('DOMContentLoaded', initCharts);
+    </script>
+</body>
+</html>
+
+
+<!-- OLDSTUFF -->
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dynamic Client Report | A.SaaS Tools</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Syne:wght@600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../../css/global.css">
+    
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        body { padding-top: 100px; }
+        
+        .builder-container {
+            display: grid;
+            grid-template-columns: 350px 1fr;
+            gap: 40px;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 5%;
+            align-items: start;
+        }
+
+        /* --- LEFT: Data Entry Form --- */
+        .data-form-panel {
+            background: rgba(22, 22, 22, 0.6);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 25px;
+            backdrop-filter: blur(10px);
+            height: calc(100vh - 140px); /* Sticky scrollable form */
+            overflow-y: auto;
+            position: sticky;
+            top: 100px;
+        }
+
+        /* Custom Scrollbar for form */
+        .data-form-panel::-webkit-scrollbar { width: 6px; }
+        .data-form-panel::-webkit-scrollbar-thumb { background: rgba(57, 255, 20, 0.3); border-radius: 10px; }
+
+        .form-section-title { font-family: var(--font-heading); color: var(--primary); font-size: 1.1rem; margin: 20px 0 15px; padding-bottom: 5px; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .form-section-title:first-child { margin-top: 0; }
+
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; font-size: 0.8rem; color: var(--text-sec); margin-bottom: 5px; text-transform: uppercase; letter-spacing: 1px; }
+        .form-group input {
+            width: 100%; padding: 10px 12px;
+            background: rgba(0,0,0,0.5);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 6px; color: #fff;
+            font-family: var(--font-body);
+            transition: all 0.3s;
+        }
+        .form-group input:focus { border-color: var(--primary); outline: none; box-shadow: 0 0 10px rgba(57,255,20,0.2); }
+
+        .metrics-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+        /* --- RIGHT: Live Report Preview --- */
+        .report-preview-panel {
+            background: #0a0a0a; /* Pure black for print contrast */
+            border: 1px solid rgba(255,255,255,0.05);
+            border-radius: 12px;
+            padding: 40px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            min-height: 800px;
+            position: relative;
+        }
+
+        /* Watermark for branding */
+        .watermark { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); opacity: 0.02; font-family: var(--font-heading); font-size: 8rem; white-space: nowrap; pointer-events: none; }
+
+        .report-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 40px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 20px; }
+        .report-brand h1 { font-family: var(--font-heading); font-size: 2.2rem; margin-bottom: 5px; color: #fff; }
+        .report-brand p { color: var(--text-sec); font-size: 1rem; }
+        .report-meta { text-align: right; }
+        .report-meta h3 { font-family: var(--font-heading); color: var(--primary); font-size: 1.2rem; }
+        .report-meta p { color: var(--text-sec); font-size: 0.9rem; margin-top: 5px; }
+
+        .chart-wrapper { height: 400px; width: 100%; margin-top: 40px; }
+
+        /* Action Buttons (For Phase 2) */
+        .action-bar { display: flex; justify-content: flex-end; gap: 15px; margin-top: 20px; }
+
+        @media (max-width: 1024px) {
+            .builder-container { grid-template-columns: 1fr; }
+            .data-form-panel { position: relative; top: 0; height: auto; overflow: visible; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="tool-nav" style="position: fixed; top: 0; left: 0; width: 100%; padding: 15px 5%; background: rgba(10, 10, 10, 0.95); border-bottom: 1px solid rgba(255,255,255,0.05); z-index: 1000; display: flex; justify-content: space-between;">
+        <a href="../../index.html" class="logo" style="font-family: 'Syne'; font-weight: 800; color: #fff; text-decoration: none;">A.SaaS<span style="color: #39FF14;">.</span></a>
+        <a href="../../index.html" style="color: #a4abc8; text-decoration: none; font-size: 0.9rem;">← Back</a>
+    </nav>
+
+    <div class="builder-container">
+        
+        <div class="data-form-panel">
+            
+            <div class="form-section-title">Report Details</div>
+            <div class="form-group">
+                <label>Agency Name</label>
+                <input type="text" id="agencyName" value="Your Agency Name" oninput="updateReportText()">
+            </div>
+            <div class="form-group">
+                <label>Client Name</label>
+                <input type="text" id="clientName" value="Awesome Client LLC" oninput="updateReportText()">
+            </div>
+            <div class="form-group">
+                <label>Report Month</label>
+                <input type="month" id="reportMonth" value="2026-04" oninput="updateReportText()">
+            </div>
+
+            <div class="form-section-title">Facebook</div>
+            <div class="metrics-grid">
+                <div class="form-group">
+                    <label>Reach</label>
+                    <input type="number" id="fbReach" value="12500" oninput="updateLiveChart()">
+                </div>
+                <div class="form-group">
+                    <label>Engagement</label>
+                    <input type="number" id="fbEng" value="3200" oninput="updateLiveChart()">
+                </div>
+            </div>
+
+            <div class="form-section-title">Instagram</div>
+            <div class="metrics-grid">
+                <div class="form-group">
+                    <label>Reach</label>
+                    <input type="number" id="igReach" value="28400" oninput="updateLiveChart()">
+                </div>
+                <div class="form-group">
+                    <label>Engagement</label>
+                    <input type="number" id="igEng" value="8900" oninput="updateLiveChart()">
+                </div>
+            </div>
+
+            <div class="form-section-title">LinkedIn</div>
+            <div class="metrics-grid">
+                <div class="form-group">
+                    <label>Impressions</label>
+                    <input type="number" id="liReach" value="5600" oninput="updateLiveChart()">
+                </div>
+                <div class="form-group">
+                    <label>Clicks/Eng.</label>
+                    <input type="number" id="liEng" value="850" oninput="updateLiveChart()">
+                </div>
+            </div>
+
+            <div class="form-section-title">Other Platforms</div>
+            <div class="metrics-grid">
+                <div class="form-group">
+                    <label>Reach</label>
+                    <input type="number" id="otReach" value="2100" oninput="updateLiveChart()">
+                </div>
+                <div class="form-group">
+                    <label>Engagement</label>
+                    <input type="number" id="otEng" value="420" oninput="updateLiveChart()">
+                </div>
+            </div>
+
+        </div>
+
+        <div>
+            <div class="report-preview-panel" id="printArea">
+                <div class="watermark" id="previewWatermark">YOUR AGENCY</div>
+                
+                <div class="report-header">
+                    <div class="report-brand">
+                        <h1 id="previewAgency">Your Agency Name</h1>
+                        <p>Social Media Performance Report</p>
+                    </div>
+                    <div class="report-meta">
+                        <h3 id="previewClient">Awesome Client LLC</h3>
+                        <p id="previewMonth">April 2026</p>
+                    </div>
+                </div>
+
+                <h3 style="font-family: 'Syne'; margin-bottom: 10px; color: #fff;">Platform Breakdown</h3>
+                <p style="color: var(--text-sec); font-size: 0.9rem; margin-bottom: 20px;">Comparing Reach vs Engagement across all primary social channels.</p>
+                
+                <div class="chart-wrapper">
+                    <canvas id="liveChart"></canvas>
+                </div>
+            </div>
+
+            <div class="action-bar">
+                <button class="btn btn-secondary" onclick="alert('Email capture popup will go here in Phase 2!')">Save to Dashboard</button>
+                <button class="btn btn-primary" onclick="alert('PDF Generation Engine will be connected here in Phase 2!')">Export PDF ↓</button>
+            </div>
+        </div>
+
+    </div>
+
+    <script src="../../js/main.js"></script>
+    <script>
+        // 1. Text Update Logic (Agency, Client, Month)
+        function updateReportText() {
+            const agency = document.getElementById('agencyName').value || 'Your Agency';
+            const client = document.getElementById('clientName').value || 'Client Name';
+            
+            // Format Month (e.g., "2026-04" to "April 2026")
+            const monthVal = document.getElementById('reportMonth').value;
+            let formattedMonth = "Reporting Period";
+            if(monthVal) {
+                const date = new Date(monthVal + "-01");
+                formattedMonth = date.toLocaleString('default', { month: 'long', year: 'numeric' });
+            }
+
+            document.getElementById('previewAgency').textContent = agency;
+            document.getElementById('previewWatermark').textContent = agency.toUpperCase();
+            document.getElementById('previewClient').textContent = client;
+            document.getElementById('previewMonth').textContent = formattedMonth;
+        }
+
+        // 2. Initializing the Chart (Grouped Bar Chart)
+        const ctx = document.getElementById('liveChart').getContext('2d');
+        
+        let myChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['Facebook', 'Instagram', 'LinkedIn', 'Other'],
+                datasets: [
+                    {
+                        label: 'Reach / Impressions',
+                        data: [12500, 28400, 5600, 2100],
+                        backgroundColor: 'rgba(57, 255, 20, 0.8)', // Neon Orange
+                        borderRadius: 4
+                    },
+                    {
+                        label: 'Engagement',
+                        data: [3200, 8900, 850, 420],
+                        backgroundColor: 'rgba(164, 171, 200, 0.5)', // Grey/Blue
+                        borderRadius: 4
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                color: '#a4abc8',
+                plugins: {
+                    legend: { position: 'top', align: 'end', labels: { usePointStyle: true, boxWidth: 8 } }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: { color: 'rgba(255,255,255,0.05)' },
+                        border: { display: false }
+                    },
+                    x: {
+                        grid: { display: false },
+                        border: { display: false }
+                    }
+                }
+            }
+        });
+
+        // 3. The Live Engine: Updates chart data based on form inputs
+        function updateLiveChart() {
+            // Helper function to get clean numbers
+            const getVal = (id) => parseInt(document.getElementById(id).value) || 0;
+
+            // Fetch Data
+            const reachData = [getVal('fbReach'), getVal('igReach'), getVal('liReach'), getVal('otReach')];
+            const engData = [getVal('fbEng'), getVal('igEng'), getVal('liEng'), getVal('otEng')];
+
+            // Inject into Chart
+            myChart.data.datasets[0].data = reachData;
+            myChart.data.datasets[1].data = engData;
+            
+            // Re-render
+            myChart.update();
+        }
+
+        // Run once on load to set initial month formatting
+        updateReportText();
+    </script>
+</body>
+</html> -->

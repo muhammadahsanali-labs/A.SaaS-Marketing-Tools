@@ -1,0 +1,167 @@
+/* --- PREMIUM NEON TRAIL CURSOR (BULLETPROOF) --- */
+
+/* Force hide default cursor EVERYWHERE */
+* {
+    cursor: none !important;
+}
+
+/* Main Cursor Dot - Unbeatable Z-Index */
+.cursor-dot {
+    width: 8px;
+    height: 8px;
+    background-color: var(--primary);
+    border-radius: 50%;
+    position: fixed;
+    pointer-events: none;
+    z-index: 999999 !important; /* Always on top of everything */
+    transform: translate(-50%, -50%);
+    box-shadow: 0 0 10px var(--primary), 0 0 20px var(--primary);
+    transition: width 0.2s, height 0.2s;
+}
+
+/* Trail Container */
+.cursor-trail-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    pointer-events: none;
+    z-index: 999998 !important; /* Just below main dot */
+    overflow: hidden; /* Prevents scrollbar glitches */
+}
+
+.trail-ring {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    border: 2px solid var(--primary);
+    border-radius: 50%;
+    pointer-events: none;
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+    animation: ringExplodeFade 0.6s ease-out forwards;
+}
+
+.cursor-dot.hovering {
+    width: 20px;
+    height: 20px;
+    background-color: rgba(57, 255, 20, 0.2);
+    border: 2px solid var(--primary);
+}
+
+@keyframes ringExplodeFade {
+    0% { transform: translate(-50%, -50%) scale(1); opacity: 1; border-width: 2px; }
+    100% { transform: translate(-50%, -50%) scale(3); opacity: 0; border-width: 1px; }
+}
+
+/* Animation: Expands and Fades out */
+@keyframes ringExplodeFade {
+    0% {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 1;
+        border-width: 2px;
+    }
+    100% {
+        transform: translate(-50%, -50%) scale(3); /* Expands 3x */
+        opacity: 0; /* Vanishes */
+        border-width: 1px;
+    }
+}
+
+/* --- CSS VARIABLES (Design System) --- */
+:root {
+    --primary: #39FF14;
+    --bg-dark: #0A0A0A;
+    --card-bg: #161616;
+    --border-color: #262626;
+    --text-main: #FFFFFF;
+    --text-sec: #B0B0B0;
+    
+    --font-heading: 'Syne', sans-serif;
+    --font-body: 'Plus Jakarta Sans', sans-serif;
+    
+    --transition-smooth: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+/* --- RESET & BASE --- */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background-color: var(--bg-dark);
+    color: var(--text-main);
+    font-family: var(--font-body);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-heading);
+    font-weight: 700;
+    line-height: 1.1;
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+/* --- GLOBAL COMPONENTS --- */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 24px;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    transition: var(--transition-smooth);
+    cursor: pointer;
+    border: 1px solid transparent;
+}
+
+.btn-large {
+    padding: 14px 32px;
+    font-size: 1rem;
+}
+
+.btn-primary {
+    background-color: var(--primary);
+    color: var(--text-main);
+}
+
+.btn-primary:hover {
+    background-color: #2dd10f;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(57, 255, 20, 0.25);
+}
+
+.btn-secondary {
+    background-color: transparent;
+    color: var(--text-main);
+    border-color: var(--border-color);
+}
+
+.btn-secondary:hover {
+    background-color: var(--card-bg);
+    border-color: var(--text-sec);
+}
+
+/* --- UTILITIES & SCROLL ANIMATIONS --- */
+.fade-up {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+    will-change: opacity, transform; /* Boosts Performance */
+}
+
+/* Ye class animations.js add karega jab element screen par aayega */
+.fade-up.show-element {
+    opacity: 1;
+    transform: translateY(0);
+}

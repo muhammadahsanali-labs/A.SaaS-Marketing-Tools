@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meta Title Generator | A.SaaS Tools</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600&family=Syne:wght@600;700;800&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="../../css/global.css">
+    
+    <style>
+        /* --- TOOL SPECIFIC STYLING --- */
+        body { padding-top: 100px; }
+        
+        /* Simplified Navbar for Tools Pages */
+        .tool-nav {
+            position: fixed; top: 0; left: 0; width: 100%;
+            padding: 15px 5%; background: rgba(10, 10, 10, 0.9);
+            backdrop-filter: blur(12px); border-bottom: 1px solid var(--border-color);
+            z-index: 1000; display: flex; justify-content: space-between; align-items: center;
+        }
+        .tool-nav .logo { font-family: var(--font-heading); font-size: 1.2rem; font-weight: 800; }
+        .tool-nav .logo span { color: var(--primary); }
+        .back-link { color: var(--text-sec); font-size: 0.9rem; transition: color 0.3s; }
+        .back-link:hover { color: var(--text-main); }
+
+        /* Tool Layout */
+        .tool-container {
+            max-width: 1200px; margin: 0 auto; padding: 40px 5%;
+            display: grid; grid-template-columns: 1fr 1.5fr; gap: 40px;
+        }
+
+        .tool-header { grid-column: span 2; margin-bottom: 20px; }
+        .tool-header h1 { font-size: 2.5rem; margin-bottom: 10px; }
+        .tool-header p { color: var(--text-sec); }
+
+        /* Input Form Panel */
+        .glass-panel {
+            background: rgba(22, 22, 22, 0.4); backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px; padding: 30px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .input-group { margin-bottom: 20px; }
+        .input-group label {
+            display: block; font-size: 0.9rem; color: var(--text-sec);
+            margin-bottom: 8px; font-weight: 500;
+        }
+        .input-group input {
+            width: 100%; padding: 14px 15px; background: rgba(0, 0, 0, 0.5);
+            border: 1px solid var(--border-color); color: var(--text-main);
+            border-radius: 6px; font-family: var(--font-body);
+            transition: var(--transition-smooth); outline: none;
+        }
+        .input-group input:focus { border-color: var(--primary); box-shadow: 0 0 10px rgba(57, 255, 20, 0.2); }
+
+        /* Results Panel */
+        .results-area { display: flex; flex-direction: column; gap: 20px; }
+        
+        .result-card {
+            background: rgba(10, 10, 10, 0.6); border: 1px solid var(--border-color);
+            border-radius: 8px; padding: 20px; position: relative;
+            transition: transform 0.2s, border-color 0.2s;
+        }
+        .result-card:hover { border-color: rgba(57, 255, 20, 0.4); transform: translateY(-2px); }
+        
+        .result-title { font-size: 1.1rem; color: #1a0dab; /* Google Blue style */ margin-bottom: 10px; font-weight: 600; letter-spacing: 0.2px; }
+        
+        .result-meta {
+            display: flex; justify-content: space-between; align-items: center;
+            font-size: 0.85rem; color: var(--text-sec); margin-top: 15px;
+            border-top: 1px solid rgba(255,255,255,0.05); padding-top: 10px;
+        }
+
+        /* Character Count Indicator */
+        .char-count { font-family: monospace; font-size: 1rem; }
+        .count-good { color: #27c93f; }
+        .count-warn { color: #ffbd2e; }
+        .count-bad { color: #ff5f56; }
+
+        .copy-btn {
+            background: transparent; border: 1px solid var(--border-color);
+            color: var(--text-sec); padding: 5px 12px; border-radius: 4px;
+            cursor: pointer; transition: all 0.2s; font-size: 0.8rem;
+        }
+        .copy-btn:hover { background: rgba(57, 255, 20, 0.1); color: var(--primary); border-color: var(--primary); }
+
+        .empty-state {
+            text-align: center; color: var(--text-sec); padding: 40px;
+            border: 1px dashed var(--border-color); border-radius: 8px;
+        }
+
+        @media (max-width: 968px) { .tool-container { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+
+    <nav class="tool-nav">
+        <a href="../../index.html" class="logo">A.SaaS<span>.</span></a>
+        <a href="../../index.html" class="back-link">← Back to Dashboard</a>
+    </nav>
+
+    <div class="tool-container">
+        <div class="tool-header">
+            <h1>Meta Title Generator</h1>
+            <p>Craft high-converting, SEO-optimized meta titles instantly. Ideal length: 50-60 characters.</p>
+        </div>
+
+        <div class="glass-panel">
+            <div class="input-group">
+                <label for="mainKeyword">Target Keyword (Required)</label>
+                <input type="text" id="mainKeyword" placeholder="e.g. SEO Services London">
+            </div>
+            
+            <div class="input-group">
+                <label for="secKeyword">Secondary Keyword (Optional)</label>
+                <input type="text" id="secKeyword" placeholder="e.g. Best Agency">
+            </div>
+            
+            <div class="input-group">
+                <label for="brandName">Brand Name (Required)</label>
+                <input type="text" id="brandName" placeholder="e.g. A.SaaS Tools">
+            </div>
+
+            <button id="generateBtn" class="btn btn-primary" style="width: 100%; margin-top: 10px;">
+                Generate Magic
+            </button>
+        </div>
+
+        <div class="results-area" id="resultsArea">
+            <div class="empty-state">
+                Enter your keywords on the left to generate optimized meta titles.
+            </div>
+            </div>
+    </div>
+
+<script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const generateBtn = document.getElementById('generateBtn');
+            const generateBtnText = generateBtn.innerHTML;
+            
+            if (generateBtn) {
+                generateBtn.addEventListener('click', () => {
+                    const mainInput = document.getElementById('mainKeyword');
+                    const secInput = document.getElementById('secKeyword');
+                    const brandInput = document.getElementById('brandName');
+                    const resultsArea = document.getElementById('resultsArea');
+
+                    const main = mainInput.value.trim();
+                    const sec = secInput.value.trim();
+                    const brand = brandInput.value.trim();
+
+                    if (!main || !brand) {
+                        alert("Please enter Target Keyword and Brand Name!");
+                        return;
+                    }
+
+                    // Simulated Processing State (For Premium SaaS Feel)
+                    generateBtn.innerHTML = 'Analyzing Search Intent...';
+                    generateBtn.style.opacity = '0.7';
+                    generateBtn.disabled = true;
+                    resultsArea.innerHTML = '<div class="empty-state" style="border-color: var(--primary); color: var(--primary);">Applying SEO heuristics...</div>';
+
+                    setTimeout(() => {
+                        // Advanced Power Words & Formats
+                        const year = new Date().getFullYear();
+                        
+                        // Capitalize helper function
+                        const capitalize = (str) => str.replace(/\b\w/g, l => l.toUpperCase());
+                        
+                        const mainCap = capitalize(main);
+                        const secCap = sec ? capitalize(sec) : '';
+                        const brandCap = capitalize(brand);
+
+                        // Advanced Template Engine categorized by Intent
+                        const advancedTemplates = [];
+
+                        // 1. High-Intent / Commercial (To drive conversions)
+                        advancedTemplates.push(`Hire the Best ${mainCap} Experts | ${brandCap}`);
+                        advancedTemplates.push(`${mainCap} Services - Top Rated Agency | ${brandCap}`);
+                        if(secCap) advancedTemplates.push(`Premium ${mainCap} & ${secCap} | ${brandCap}`);
+
+                        // 2. Action-Oriented (High CTR)
+                        advancedTemplates.push(`Boost Your ROI with Expert ${mainCap} | ${brandCap}`);
+                        advancedTemplates.push(`Get Results Fast: ${mainCap} Solutions | ${brandCap}`);
+                        
+                        // 3. Authority / Trust (Brand focused)
+                        advancedTemplates.push(`${brandCap}: The #1 Choice for ${mainCap}`);
+                        if(secCap) advancedTemplates.push(`${mainCap} Specialists - Trusted for ${secCap} | ${brandCap}`);
+                        
+                        // 4. Time-Sensitive / Freshness (Google loves this)
+                        advancedTemplates.push(`Top ${mainCap} Strategies for ${year} | ${brandCap}`);
+                        advancedTemplates.push(`${mainCap}: Proven Results in ${year} | ${brandCap}`);
+
+                        // 5. Niche/Specific (If secondary keyword exists)
+                        if(secCap) {
+                            advancedTemplates.push(`${secCap} Focused ${mainCap} | Get Started | ${brandCap}`);
+                        } else {
+                            advancedTemplates.push(`Custom ${mainCap} Tailored For Your Growth | ${brandCap}`);
+                        }
+
+                        resultsArea.innerHTML = ''; // Clear processing state
+
+                        // Render Logic
+                        advancedTemplates.forEach((title, index) => {
+                            const length = title.length;
+                            let colorClass = 'count-bad';
+                            let lengthStatus = 'Too Long/Short';
+                            
+                            // Perfect SEO length logic (50-60 is ideal, 40-65 is acceptable)
+                            if (length >= 50 && length <= 60) {
+                                colorClass = 'count-good';
+                                lengthStatus = 'Optimal';
+                            } else if (length >= 40 && length <= 65) {
+                                colorClass = 'count-warn';
+                                lengthStatus = 'Acceptable';
+                            }
+
+                            // Only show titles that aren't completely broken in length (under 30 or over 80)
+                            if (length >= 30 && length <= 75) {
+                                const delay = index * 0.1; // Staggered entrance animation
+                                
+                                const cardHTML = `
+                                    <div class="result-card fade-up show-element" style="transition-delay: ${delay}s">
+                                        <div class="result-title" style="color: #fff; font-size: 1.15rem;">${title}</div>
+                                        <div class="result-meta">
+                                            <span>
+                                                <span class="${colorClass}" style="font-weight: 600;">${lengthStatus}</span> 
+                                                <span style="opacity: 0.6; margin-left: 5px;">(${length} chars)</span>
+                                            </span>
+                                            <button class="copy-btn" onclick="copyToClipboard(this, '${title.replace(/'/g, "\\'")}')">Copy</button>
+                                        </div>
+                                    </div>
+                                `;
+                                resultsArea.insertAdjacentHTML('beforeend', cardHTML);
+                            }
+                        });
+
+                        // Restore Button
+                        generateBtn.innerHTML = generateBtnText;
+                        generateBtn.style.opacity = '1';
+                        generateBtn.disabled = false;
+
+                    }, 800); // 800ms delay to feel like the algorithm is "thinking"
+                });
+            }
+        });
+
+        function copyToClipboard(btnElement, text) {
+            navigator.clipboard.writeText(text).then(() => {
+                const originalText = btnElement.innerText;
+                btnElement.innerText = 'Copied! ✓';
+                btnElement.style.color = 'var(--primary)';
+                btnElement.style.borderColor = 'var(--primary)';
+                btnElement.style.background = 'rgba(57, 255, 20, 0.1)';
+                
+                setTimeout(() => {
+                    btnElement.innerText = originalText;
+                    btnElement.style.color = '';
+                    btnElement.style.borderColor = '';
+                    btnElement.style.background = 'transparent';
+                }, 2000);
+            });
+        }
+    </script>
+
+<!-- Cursor -->
+<div class="cursor-dot"></div>
+<div class="cursor-trail-container" id="trailContainer"></div>
+<!-- Cursor End -->
+
+<script src="../../js/main.js"></script>
+<script src="../../js/animations.js"></script>        
+
+</body>
+</html>>

@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A.SaaS Tools | Premium SEO Platform</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600&family=Syne:wght@600;700;800&display=swap" rel="stylesheet">
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+
+    <link rel="stylesheet" href="css/global.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/homepage.css">
+    <link rel="stylesheet" href="css/responsive.css">
+
+    <style>
+        /* --- PREMIUM LOADER & CANVAS STYLES --- */
+        
+        /* Subtle Noise Overlay for Texture */
+        .noise-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 9998; opacity: 0.03;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+        }
+        
+        /* Cinematic Loading Screen */
+        .loader {
+            position: fixed; inset: 0; background: #050505; z-index: 10001;
+            display: flex; align-items: center; justify-content: center; flex-direction: column;
+        }
+        .loader-title { font-family: 'Syne', sans-serif; font-size: 2.5rem; font-weight: 800; color: #fff; letter-spacing: 0.1em; text-transform: uppercase; }
+        .loader-title span { color: #39FF14; }
+        .loader-subtitle { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.85rem; color: #a4abc8; margin-top: 10px; letter-spacing: 0.15em; text-transform: uppercase; }
+        .loader-bar { width: 220px; height: 2px; background: rgba(255,255,255,0.1); margin-top: 30px; overflow: hidden; border-radius: 2px; }
+        .loader-progress { height: 100%; background: #39FF14; width: 0; transition: width 0.2s ease; box-shadow: 0 0 10px rgba(57,255,20,0.5); }
+
+        /* Hero Canvas Alignment */
+        .hero { position: relative; overflow: hidden; }
+        #hero-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; }
+        .hero-container { position: relative; z-index: 1; } /* Ensure text stays above particles */
+    </style>
+</head>
+<body>
+
+    <div class="noise-overlay"></div>
+
+    <div class="loader" id="loader">
+        <div class="loader-title">A.SaaS<span>.</span></div>
+        <div class="loader-subtitle">Enterprise SEO Platform</div>
+        <div class="loader-bar">
+            <div class="loader-progress" id="loader-progress"></div>
+        </div>
+    </div>
+
+    <nav id="navbar" class="navbar">
+        <div class="nav-container">
+            <a href="#" class="logo">
+                <img src="assets/icons/logo.svg" alt="A.SaaS Tools Logo" style="height: 40px; width: auto; object-fit: contain;">
+            </a>
+<nav class="main-nav">
+  <ul class="nav-links">    
+    <li class="nav-item dropdown">
+      <a href="#" class="dropdown-toggle">Dashboards ▾</a>
+      <ul class="dropdown-menu">
+        <li><a href="./dashboards/seo-performance/index.html">SEO Performance</a></li>
+        <li><a href="./dashboards/social-media-analytics/index.html">Social Media Analytics</a></li>
+      </ul>
+    </li>
+
+    <li class="nav-item dropdown">
+      <a href="#" class="dropdown-toggle">Tools ▾</a>
+      <ul class="dropdown-menu">
+        <li><a href="./tools/meta-title/index.html">Meta Title Tool</a></li>
+        <li><a href="./tools/meta-description/index.html">Meta Description</a></li>
+        <li><a href="./tools/keyword-density/index.html">Keyword Density</a></li>
+        <li><a href="./tools/utm-builder/index.html">UTM Builder</a></li>
+        <li><a href="./tools/robots-txt/index.html">Robots.txt Generator</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+        </div>
+    </nav>
+
+    <section class="hero dark-neon-theme">
+        
+        <canvas id="hero-canvas"></canvas>
+        
+        <div class="ambient-glow"></div>
+
+        <div class="hero-container">
+            <div class="hero-left">
+                <div class="badge glass-badge fade-up" style="transition-delay: 0.1s;">
+                    <span class="neon-dot"></span> V 1.0 Now Live
+                </div>
+                
+                <h1 class="fade-up" style="transition-delay: 0.2s;">
+                    Professional SEO Tools<br>
+                    <span class="neon-text-gradient">Built For Agencies.</span>
+                </h1>
+                
+                <div class="typing-wrapper fade-up" style="transition-delay: 0.3s;">
+                    <span class="typing-static">Engineered to </span>
+                    <span id="typing-text" class="typing-dynamic neon-glow-text"></span><span class="cursor">|</span>
+                </div>
+                
+                <p class="hero-desc fade-up" style="transition-delay: 0.4s;">
+                    Enterprise-grade toolset designed to accelerate your workflow. No subscriptions, no limits. Just pure performance.
+                </p>
+                
+                <div class="hero-cta fade-up" style="transition-delay: 0.5s;">
+                    <a href="#tools" class="btn btn-neon btn-large">Explore Tools</a>
+                    <a href="#dashboards" class="btn btn-glass btn-large">View Dashboards</a>
+                </div>
+            </div>
+
+            <div class="hero-right fade-up" style="transition-delay: 0.6s;">
+                <div class="mockup-container">
+                    
+                    <div class="glass-panel mockup-main floating-slow">
+                        <div class="mockup-header">
+                            <div class="dots"><span></span><span></span><span></span></div>
+                            <div class="mockup-title">SEO Performance UI</div>
+                        </div>
+                        <div class="mockup-body">
+                            <div class="neon-chart-area"></div>
+                            <div class="mockup-bars">
+                                <div class="bar glass-bar" style="height: 60%"></div>
+                                <div class="bar glass-bar" style="height: 80%"></div>
+                                <div class="bar glass-bar" style="height: 40%"></div>
+                                <div class="bar neon-bar" style="height: 100%"></div>
+                                <div class="bar glass-bar" style="height: 70%"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="glass-panel mockup-card card-1 floating-fast">
+                        <div class="card-icon-glow"></div>
+                        <span class="card-label">Health Score</span>
+                        <span class="card-value neon-glow-text">98/100</span>
+                    </div>
+                    
+                    <div class="glass-panel mockup-card card-2 floating-medium">
+                        <span class="card-label">Keyword Density</span>
+                        <span class="card-value optimal-glow">Optimal</span>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </section>
+
+<section class="tools-section" id="tools">
+        <div class="tools-container">
+            
+            <div class="section-header fade-up">
+                <div class="badge glass-badge"><span class="neon-dot"></span> Our Arsenal</div>
+                <h2>Premium SEO Tools</h2>
+                <p>Enterprise-grade utilities designed for scale. Stop paying for basic features.</p>
+            </div>
+
+            <div class="bento-grid">
+                
+                <div class="bento-card bento-large glass-panel fade-up" style="transition-delay: 0.1s;">
+                    <div class="card-content">
+                        <h3>Meta Title & Description</h3>
+                        <p>Generate highly optimized, click-magnet metadata tailored for your specific target keywords and brand identity.</p>
+                        <a href="./tools/meta-title/index.html" class="tool-link">Launch Toolkit <span class="arrow">→</span></a>
+                    </div>
+                    <div class="bento-visual">
+                        <div class="fake-input glass-bar">Enter target keyword...</div>
+                        <div class="fake-btn neon-bar">Optimize</div>
+                    </div>
+                </div>
+
+                <div class="bento-card glass-panel fade-up" style="transition-delay: 0.2s;">
+                    <div class="card-content">
+                        <div class="icon-glow-small"></div>
+                        <h3>Keyword Density</h3>
+                        <p>Analyze content instantly to avoid stuffing and maintain perfect semantic balance.</p>
+                        <a href="./tools/keyword-density/index.html" class="tool-link">Analyze Now <span class="arrow">→</span></a>
+                    </div>
+                </div>
+
+                <div class="bento-card glass-panel fade-up" style="transition-delay: 0.3s;">
+                    <div class="card-content">
+                        <div class="icon-glow-small"></div>
+                        <h3>Robots.txt Generator</h3>
+                        <p>Create secure, error-free crawling directives for search engines in seconds.</p>
+                        <a href="/tools/robots-txt/index.html" class="tool-link">Generate <span class="arrow">→</span></a>
+                    </div>
+                </div>
+
+                <div class="bento-card bento-wide glass-panel fade-up" style="transition-delay: 0.4s;">
+                    <div class="card-content">
+                        <h3>UTM Campaign Builder</h3>
+                        <p>Standardize your agency's tracking parameters. Build, validate, and manage UTM tags for pixel-perfect analytics attribution.</p>
+                        <a href="./tools/utm-builder/index.html" class="tool-link">Start Tracking <span class="arrow">→</span></a>
+                    </div>
+                    <div class="bento-visual wide-visual">
+                        <div class="glass-badge">utm_source=google</div>
+                        <div class="glass-badge">utm_medium=cpc</div>
+                        <div class="glass-badge neon-border">utm_campaign=black_friday</div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+<footer class="site-footer">
+        <div class="footer-glow"></div>
+
+        <div class="footer-container">
+            
+            <div class="footer-top">
+                <div class="footer-brand">
+                    <img src="assets/icons/logo.svg" alt="A.SaaS Tools Logo" class="footer-logo">
+                    <h2>Uncover a new approach to SEO.</h2>
+                    <p>Get early access to our premium toolset and join 500+ agencies scaling their operations.</p>
+                    <a href="#tools" class="btn btn-primary btn-large">Get started for free <span style="margin-left: 8px;">↓</span></a>
+                </div>
+            </div>
+
+            <div class="footer-links-grid">
+                <div class="footer-column">
+                    <span class="column-title">// Free Tools</span>
+                    <a href="./tools/meta-title/index.html">Meta Title Generator</a>
+                    <a href="./tools/meta-description/index.html">Meta Description</a>
+                    <a href="./tools/keyword-density/index.html">Keyword Density</a>
+                    <a href="./tools/robots-txt/index.html">Robots.txt Generator</a>
+                    <a href="./tools/utm-builder/index.html">UTM Builder</a>
+                </div>
+
+                <div class="footer-column">
+                    <span class="column-title">// Dashboards</span>
+                    <a href="./dashboards/seo-performance/index.html">SEO Performance</a>
+                    <a href="#">WordPress Health</a>
+                    <a href="#">Shopify Analytics</a>
+                    <a href="./dashboards/social-media-analytics/index.html">Social Media Analytics</a>
+                    <a href="#">White-label</a>
+                </div>
+
+                <div class="footer-column">
+                    <span class="column-title">// Resources</span>
+                    <a href="#">SEO Blog</a>
+                    <a href="#">API Documentation</a>
+                    <a href="#">Pricing (Free)</a>
+                    <a href="#">Roadmap</a>
+                </div>
+
+                <div class="footer-column">
+                    <span class="column-title">// Company</span>
+                    <a href="#">About Us</a>
+                    <a href="#">Hire SEO Experts</a>
+                    <a href="#">Partners</a>
+                    <a href="#">Contact Support</a>
+                </div>
+            </div>
+
+            <div class="footer-divider"></div>
+
+            <div class="footer-bottom">
+                <div class="newsletter-section">
+                    <div class="newsletter-text">
+                        <h3>Never miss an update</h3>
+                        <p>Get the latest SEO strategies and tool updates from A.SaaS Tools. We rarely send more than one email a month.</p>
+                    </div>
+                    
+                    <form class="newsletter-form" id="footerForm">
+                        <input type="email" placeholder="agency@example.com" required>
+                        <button type="submit" class="btn btn-primary">Join</button>
+                    </form>
+                </div>
+
+                <div class="copyright-row">
+                    <p>© 2026 A.SaaS Tools. We Believe In Excellence.</p>
+                    <div class="legal-links">
+                        <a href="#">Privacy Policy</a>
+                        <a href="#">Terms of Service</a>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </footer>
+
+<div class="cursor-dot"></div>
+<div class="cursor-trail-container" id="trailContainer"></div>
+<script src="js/main.js"></script>
+    <script src="js/typing.js"></script>
+    <script src="js/animations.js"></script>
+
+    <script>
+        // --- 1. LOADER ANIMATION (GSAP) ---
+        window.addEventListener('load', () => {
+            const progress = document.getElementById('loader-progress');
+            let width = 0;
+            
+            const interval = setInterval(() => {
+                width += Math.random() * 25; 
+                if (width >= 100) {
+                    width = 100;
+                    progress.style.width = width + '%';
+                    clearInterval(interval);
+                    
+                    setTimeout(() => {
+                        gsap.to('#loader', {
+                            opacity: 0,
+                            duration: 0.8,
+                            ease: 'power2.inOut',
+                            onComplete: () => {
+                                document.getElementById('loader').style.display = 'none';
+                            }
+                        });
+                    }, 400); 
+                } else {
+                    progress.style.width = width + '%';
+                }
+            }, 80);
+        });
+
+        // --- 2. PARTICLE NETWORK BACKGROUND ---
+        const canvas = document.getElementById('hero-canvas');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+        let animationId;
+
+        function resizeCanvas() {
+            const hero = document.querySelector('.hero');
+            if(hero) {
+                canvas.width = hero.offsetWidth;
+                canvas.height = hero.offsetHeight;
+            }
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+             resizeCanvas();
+             initParticles();
+             animateParticles();
+        });
+        window.addEventListener('resize', resizeCanvas);
+
+        class Particle {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.vx = (Math.random() - 0.5) * 0.5;
+                this.vy = (Math.random() - 0.5) * 0.5;
+                this.size = Math.random() * 1.5 + 1;
+            }
+
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+
+                if (this.x < 0 || this.x > canvas.width) this.vx *= -1;
+                if (this.y < 0 || this.y > canvas.height) this.vy *= -1;
+            }
+
+            draw() {
+                ctx.fillStyle = 'rgba(57, 255, 20, 0.6)'; // Neon Green
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        function initParticles() {
+            particles = [];
+            const particleCount = Math.min(80, Math.floor(canvas.width * canvas.height / 15000));
+            for (let i = 0; i < particleCount; i++) {
+                particles.push(new Particle());
+            }
+        }
+
+        function animateParticles() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            particles.forEach((particle, i) => {
+                particle.update();
+                particle.draw();
+
+                for (let j = i + 1; j < particles.length; j++) {
+                    const dx = particles[j].x - particle.x;
+                    const dy = particles[j].y - particle.y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+
+                    if (distance < 150) {
+                        const opacity = 0.2 * (1 - distance / 150);
+                        ctx.strokeStyle = `rgba(57, 255, 20, ${opacity})`;
+                        ctx.lineWidth = 1;
+                        ctx.beginPath();
+                        ctx.moveTo(particle.x, particle.y);
+                        ctx.lineTo(particles[j].x, particles[j].y);
+                        ctx.stroke();
+                    }
+                }
+            });
+
+            animationId = requestAnimationFrame(animateParticles);
+        }
+    </script>
+</body>
+</html>

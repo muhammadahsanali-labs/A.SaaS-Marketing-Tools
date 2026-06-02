@@ -1,0 +1,60 @@
+@media(max-width: 1100px) {
+
+    .hero-wrapper {
+        grid-template-columns: 1fr;
+    }
+
+    .hero-content {
+        text-align: center;
+        margin: auto;
+    }
+
+    .hero-content h1 {
+        font-size: 58px;
+        margin-inline: auto;
+    }
+
+    .hero-description {
+        margin-inline: auto;
+    }
+
+    .hero-buttons,
+    .hero-badges-row {
+        justify-content: center;
+    }
+
+    .hero-visual {
+        max-width: 700px;
+        margin: auto;
+    }
+
+}
+
+
+@media(max-width: 768px) {
+
+    .nav-links {
+        display: none;
+    }
+
+    .hero-content h1 {
+        font-size: 42px;
+    }
+
+    .typing-wrapper {
+        font-size: 22px;
+    }
+
+    .hero-buttons {
+        flex-direction: column;
+    }
+
+    .primary-btn,
+    .secondary-btn {
+        width: 100%;
+    }
+
+    .dashboard-top h2 {
+        font-size: 38px;
+    }
+}

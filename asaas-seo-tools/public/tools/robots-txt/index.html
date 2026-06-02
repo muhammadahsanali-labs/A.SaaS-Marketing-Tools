@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Robots.txt Generator | A.SaaS Tools</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600&family=Syne:wght@600;700;800&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="../../css/global.css">
+    
+    <style>
+        /* --- TOOL SPECIFIC STYLING --- */
+        body { padding-top: 100px; }
+        
+        .tool-nav {
+            position: fixed; top: 0; left: 0; width: 100%;
+            padding: 15px 5%; background: rgba(10, 10, 10, 0.9);
+            backdrop-filter: blur(12px); border-bottom: 1px solid var(--border-color);
+            z-index: 1000; display: flex; justify-content: space-between; align-items: center;
+        }
+        .tool-nav .logo { font-family: var(--font-heading); font-size: 1.2rem; font-weight: 800; }
+        .tool-nav .logo span { color: var(--primary); }
+        .back-link { color: var(--text-sec); font-size: 0.9rem; transition: color 0.3s; }
+        .back-link:hover { color: var(--text-main); }
+
+        .tool-container {
+            max-width: 1200px; margin: 0 auto; padding: 40px 5%;
+            display: grid; grid-template-columns: 1fr 1.2fr; gap: 40px;
+        }
+
+        .tool-header { grid-column: span 2; margin-bottom: 20px; }
+        .tool-header h1 { font-size: 2.5rem; margin-bottom: 10px; }
+        .tool-header p { color: var(--text-sec); }
+
+        .glass-panel {
+            background: rgba(22, 22, 22, 0.4); backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px; padding: 30px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+            height: fit-content;
+        }
+
+        .input-group { margin-bottom: 20px; }
+        .input-group label {
+            display: block; font-size: 0.9rem; color: var(--text-sec);
+            margin-bottom: 8px; font-weight: 500;
+        }
+        .input-group input, .input-group select, .input-group textarea {
+            width: 100%; padding: 14px 15px; background: rgba(0, 0, 0, 0.5);
+            border: 1px solid var(--border-color); color: var(--text-main);
+            border-radius: 6px; font-family: var(--font-body);
+            transition: var(--transition-smooth); outline: none;
+            -webkit-appearance: none; /* For standardizing selects */
+        }
+        .input-group textarea { height: 120px; resize: vertical; font-family: monospace; }
+        .input-group input:focus, .input-group select:focus, .input-group textarea:focus { border-color: var(--primary); box-shadow: 0 0 10px rgba(57, 255, 20, 0.2); }
+
+        /* Danger/Warning toggle styling */
+        .radio-group { display: flex; gap: 15px; margin-top: 5px; }
+        .radio-label {
+            display: flex; align-items: center; gap: 8px; cursor: pointer;
+            font-size: 0.9rem; color: var(--text-main);
+        }
+        .radio-label input[type="radio"] { width: auto; accent-color: var(--primary); }
+        .warning-text { color: #ff5f56; font-size: 0.8rem; margin-top: 5px; display: none; }
+
+        /* Results Editor Style */
+        .editor-container {
+            background: #111; border: 1px solid var(--border-color);
+            border-radius: 8px; overflow: hidden; position: relative;
+        }
+        
+        .editor-header {
+            display: flex; justify-content: space-between; align-items: center;
+            background: #1a1a1a; padding: 12px 20px; border-bottom: 1px solid var(--border-color);
+        }
+        
+        .editor-title { font-size: 0.85rem; color: var(--text-sec); font-family: monospace; display: flex; align-items: center; gap: 8px;}
+        .editor-title::before { content: ''; width: 8px; height: 8px; background: var(--primary); border-radius: 50%; }
+
+        .editor-actions { display: flex; gap: 10px; }
+        
+        .editor-btn {
+            background: transparent; border: 1px solid var(--border-color);
+            color: var(--text-sec); padding: 5px 12px; border-radius: 4px;
+            cursor: pointer; transition: all 0.2s; font-size: 0.8rem;
+        }
+        .editor-btn:hover { background: rgba(57, 255, 20, 0.1); color: var(--primary); border-color: var(--primary); }
+        .btn-fill { background: rgba(255, 255, 255, 0.05); }
+
+        .editor-body { padding: 25px; min-height: 300px; }
+        .editor-body pre { font-family: monospace; color: #E8EAED; font-size: 0.95rem; line-height: 1.6; white-space: pre-wrap; }
+        
+        /* Syntax highlighting classes */
+        .syn-comment { color: #6a9955; }
+        .syn-keyword { color: #569cd6; font-weight: 600; }
+        .syn-value { color: #ce9178; }
+
+        .empty-state { text-align: center; color: var(--text-sec); padding: 50px 20px; }
+
+        @media (max-width: 968px) { .tool-container { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+
+    <nav class="tool-nav">
+        <a href="../../index.html" class="logo">A.SaaS<span>.</span></a>
+        <a href="../../index.html" class="back-link">← Back to Dashboard</a>
+    </nav>
+
+    <div class="tool-container">
+        <div class="tool-header">
+            <h1>Robots.txt Generator</h1>
+            <p>Control search engine crawlers with precision. Generate properly formatted directives instantly.</p>
+        </div>
+
+        <div class="glass-panel">
+            <div class="input-group">
+                <label for="cmsTemplate">Platform Template</label>
+                <select id="cmsTemplate">
+                    <option value="custom">Custom (Blank)</option>
+                    <option value="wordpress">WordPress Optimized</option>
+                    <option value="shopify">Shopify Optimized</option>
+                </select>
+            </div>
+
+            <div class="input-group">
+                <label>Default Access (User-agent: *)</label>
+                <div class="radio-group">
+                    <label class="radio-label">
+                        <input type="radio" name="defaultAccess" value="allow" checked> Allow All
+                    </label>
+                    <label class="radio-label">
+                        <input type="radio" name="defaultAccess" value="disallow"> Block All
+                    </label>
+                </div>
+                <div id="blockWarning" class="warning-text">⚠️ Warning: This will hide your entire site from Google.</div>
+            </div>
+
+            <div class="input-group">
+                <label for="sitemapUrl">XML Sitemap URL (Optional)</label>
+                <input type="url" id="sitemapUrl" placeholder="https://yourdomain.com/sitemap.xml">
+            </div>
+
+            <div class="input-group">
+                <label for="customPaths">Disallow Specific Paths (One per line)</label>
+                <textarea id="customPaths" placeholder="/private/\n/temp-files/\n*.pdf$"></textarea>
+            </div>
+
+            <button id="generateBtn" class="btn btn-primary" style="width: 100%;">
+                Generate File
+            </button>
+        </div>
+
+        <div class="editor-container fade-up" style="opacity: 0; transform: translateY(20px); transition: all 0.5s;">
+            <div class="editor-header">
+                <div class="editor-title">robots.txt</div>
+                <div class="editor-actions">
+                    <button class="editor-btn" id="copyBtn" style="display: none;">Copy</button>
+                    <button class="editor-btn btn-fill" id="downloadBtn" style="display: none;">Download .txt</button>
+                </div>
+            </div>
+            <div class="editor-body">
+                <div class="empty-state" id="editorEmpty">
+                    Configure your settings on the left to generate the robots.txt code.
+                </div>
+                <pre id="editorOutput" style="display: none;"></pre>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const generateBtn = document.getElementById('generateBtn');
+            const copyBtn = document.getElementById('copyBtn');
+            const downloadBtn = document.getElementById('downloadBtn');
+            const editorContainer = document.querySelector('.editor-container');
+            const editorEmpty = document.getElementById('editorEmpty');
+            const editorOutput = document.getElementById('editorOutput');
+            const blockRadios = document.querySelectorAll('input[name="defaultAccess"]');
+            const warningText = document.getElementById('blockWarning');
+            const cmsTemplate = document.getElementById('cmsTemplate');
+            const customPathsTextarea = document.getElementById('customPaths');
+
+            // Toggle Warning
+            blockRadios.forEach(radio => {
+                radio.addEventListener('change', (e) => {
+                    warningText.style.display = e.target.value === 'disallow' ? 'block' : 'none';
+                });
+            });
+
+            // Template Auto-fill
+            const templates = {
+                wordpress: "/wp-admin/\n/wp-login.php\n/xmlrpc.php\n*?replytocom",
+                shopify: "/admin\n/cart\n/checkout\n/orders\n*?customer_posted=true",
+                custom: ""
+            };
+
+            cmsTemplate.addEventListener('change', (e) => {
+                customPathsTextarea.value = templates[e.target.value];
+            });
+
+            // Generate Logic
+            if (generateBtn) {
+                generateBtn.addEventListener('click', () => {
+                    const access = document.querySelector('input[name="defaultAccess"]:checked').value;
+                    const sitemap = document.getElementById('sitemapUrl').value.trim();
+                    const customPaths = customPathsTextarea.value.trim().split('\n').filter(p => p.trim() !== '');
+
+                    let outputRaw = "";
+                    let outputHTML = "";
+
+                    // Header Comment
+                    const date = new Date().toISOString().split('T')[0];
+                    outputRaw += `# Generated by A.SaaS Tools [${date}]\n`;
+                    outputHTML += `<span class="syn-comment"># Generated by A.SaaS Tools [${date}]</span>\n`;
+                    
+                    // User Agent
+                    outputRaw += `User-agent: *\n`;
+                    outputHTML += `<span class="syn-keyword">User-agent:</span> <span class="syn-value">*</span>\n`;
+
+                    // Access Rules
+                    if (access === 'disallow') {
+                        outputRaw += `Disallow: /\n`;
+                        outputHTML += `<span class="syn-keyword">Disallow:</span> <span class="syn-value">/</span>\n`;
+                    } else {
+                        if (customPaths.length === 0) {
+                            outputRaw += `Allow: /\n`;
+                            outputHTML += `<span class="syn-keyword">Allow:</span> <span class="syn-value">/</span>\n`;
+                        } else {
+                            customPaths.forEach(path => {
+                                outputRaw += `Disallow: ${path.trim()}\n`;
+                                outputHTML += `<span class="syn-keyword">Disallow:</span> <span class="syn-value">${path.trim()}</span>\n`;
+                            });
+                        }
+                    }
+
+                    // Sitemap
+                    if (sitemap) {
+                        outputRaw += `\nSitemap: ${sitemap}\n`;
+                        outputHTML += `\n<span class="syn-keyword">Sitemap:</span> <span class="syn-value">${sitemap}</span>\n`;
+                    }
+
+                    // UI Updates
+                    editorEmpty.style.display = 'none';
+                    editorOutput.style.display = 'block';
+                    editorOutput.innerHTML = outputHTML;
+                    copyBtn.style.display = 'block';
+                    downloadBtn.style.display = 'block';
+                    
+                    editorContainer.style.opacity = '1';
+                    editorContainer.style.transform = 'translateY(0)';
+
+                    // Store raw text for copy/download
+                    editorOutput.setAttribute('data-raw', outputRaw);
+                });
+            }
+
+            // Copy Action
+            copyBtn.addEventListener('click', () => {
+                const text = editorOutput.getAttribute('data-raw');
+                navigator.clipboard.writeText(text).then(() => {
+                    const originalText = copyBtn.innerText;
+                    copyBtn.innerText = 'Copied!';
+                    copyBtn.style.color = 'var(--primary)';
+                    copyBtn.style.borderColor = 'var(--primary)';
+                    setTimeout(() => {
+                        copyBtn.innerText = originalText;
+                        copyBtn.style.color = '';
+                        copyBtn.style.borderColor = '';
+                    }, 2000);
+                });
+            });
+
+            // Download Action
+            downloadBtn.addEventListener('click', () => {
+                const text = editorOutput.getAttribute('data-raw');
+                const blob = new Blob([text], { type: 'text/plain' });
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'robots.txt';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                window.URL.revokeObjectURL(url);
+            });
+        });
+    </script>
+
+<!-- Cursor -->
+<div class="cursor-dot"></div>
+<div class="cursor-trail-container" id="trailContainer"></div>
+<!-- Cursor End -->
+
+<script src="../../js/main.js"></script>
+<script src="../../js/animations.js"></script>
+        
+</body>
+</html>
